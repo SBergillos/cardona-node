@@ -1,0 +1,36 @@
+{
+  "name": "cardona-node",
+  "version": "1.0.0",
+  "description": "Cardona server-side application for the MEVN stack",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SBergillos/cardona-node.git"
+  },
+  "keywords": [
+    "javascript",
+    "js",
+    "node",
+    "express",
+    "mongodb",
+    "security"
+  ],
+  "author": "Sergi Bergillos Pedraza",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SBergillos/cardona-node/issues"
+  },
+  "homepage": "https://github.com/SBergillos/cardona-node#readme",
+  "devDependencies": {
+    "standard": "16.0.3"
+  },
+  "dependencies": {
+    "compression": "1.7.4",
+    "express": "4.17.1"
+  },
+  "type": "module"
+}
