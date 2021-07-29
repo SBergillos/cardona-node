@@ -3,25 +3,36 @@ import express from 'express'
 import compression from 'compression'
 
 // Loaders Dependencies
-import expressLoader from './loaders/express.js'
+import { logger, serverLogger } from './loaders/logger.js'
+import { transactionIdMiddleware } from './loaders/transaction_id_middleware.js'
+
+// Configuration Dependencies
+import config from './config/index.js'
 
 // Routes Dependencies
-import statusRoutes from './api/routes/status.js'
+import routes from './api/index.js'
 
-const startApp = async () => {
-  // Create Express APP
-  const app = express()
-  // Add gzip compression for optimization
-  app.use(compression())
+logger.info('Starting Cardona')
 
-  // Mount API endpoints
-  app.use('/status', statusRoutes)
-  app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
+// Create Express APP
+logger.info('Starting Express app')
+const app = express()
 
-  // Wait for Loaders
-  await expressLoader(app)
-}
+// Add Express Middlewares
+logger.info('Adding middlewares to Express')
+app.use(serverLogger)
+app.use(transactionIdMiddleware)
+app.use(compression())
 
-startApp()
+// Mount API endpoints
+logger.info('Mounting API endpoints to Express')
+const baseEndpoint = config.api.prefix + config.api.version
+app.use(baseEndpoint, routes)
+app.get(baseEndpoint, (req, res) => {
+  logger.info('Doing operation 1 of transaction X')
+  logger.info('Doing operation 2 of transaction X')
+  logger.info('Doing operation 3 of transaction X')
+  res.send('Hello World!')
+})
+
+export default app

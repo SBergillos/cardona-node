@@ -1,8 +1,7 @@
-// NPM community 'express' package: Fast, minimalist web framework for Nodejs.
-import express from 'express'
+// NPM dependencies
+import { Router } from 'express'
 
-// Create an express router.
-const router = express.Router()
+const router = Router()
 
 router.get('/', async (req, res) => {
   return res.status(200).send('OK!')
