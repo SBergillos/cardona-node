@@ -26,7 +26,23 @@ app.enable('trust proxy')
 
 // Add Express Middlewares
 logger.info('Adding middlewares to Express')
-app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: false,
+    directives: {
+      'default-src': ["'none'"],
+      'frame-ancestors': ["'self'"],
+      'script-src': ["'self'"],
+      'style-src': ["'self'"],
+      'img-src': ["'self'"],
+      'connect-src': ["'self'"],
+      'base-uri': ["'self'"],
+      'form-action': ["'self'"],
+      'upgrade-insecure-requests': [],
+      'block-all-mixed-content': []
+    }
+  }
+}))
 app.use(serverLogger)
 app.use(transactionIdMiddleware)
 app.use(compression())

@@ -97,5 +97,5 @@ function onListening () {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port
-  logger.info('HTTP server listening on ' + bind)
+  logger.info('Server listening on ' + bind)
 }
