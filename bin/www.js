@@ -1,5 +1,7 @@
 // NPM Dependencies
 import http from 'http'
+import https from 'https'
+import fs from 'fs'
 
 // App Dependency
 import app from '../app.js'
@@ -14,10 +16,36 @@ import config from '../config/index.js'
 const port = normalizePort(config.port)
 app.set('port', port)
 
-// Create HTTP Server
-logger.info('Starting HTTP server on ' + port)
-const server = http.createServer(app)
+// Create server
+let server
 
+if (config.https) {
+  if (config.env === 'production') {
+    // In production, we have to set a dummy HTTP server to redirect to HTTPS
+    logger.info('Creating dummy HTTP server to redirect to HTTPS')
+    http.createServer((req, res) => {
+      res.writeHead(307, {
+        Location: 'https://' + req.headers.host + req.url
+      })
+      res.end()
+    }).listen(80)
+  }
+
+  // Get TLS data: certificate and key.
+  logger.info('Reading TLS Certificate')
+  const tls = {
+    cert: fs.readFileSync(config.cert.file),
+    key: fs.readFileSync(config.cert.key)
+  }
+
+  // Create HTTPS Server
+  logger.info('Starting HTTPS server on ' + port)
+  server = https.createServer(tls, app)
+} else {
+  // Create HTTP Server
+  logger.info('Starting HTTP server on ' + port)
+  server = http.createServer(app)
+}
 // HTTP Server listen on port
 server.listen(port)
 server.on('error', onError)

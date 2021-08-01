@@ -2,6 +2,7 @@
 import express from 'express'
 import compression from 'compression'
 import createHttpError from 'http-errors'
+import helmet from 'helmet'
 
 // Loaders Dependencies
 import { logger, serverLogger } from './loaders/logger.js'
@@ -20,8 +21,12 @@ logger.info('Starting Cardona')
 logger.info('Starting Express app')
 const app = express()
 
+// Enable trust proxy
+app.enable('trust proxy')
+
 // Add Express Middlewares
 logger.info('Adding middlewares to Express')
+app.use(helmet())
 app.use(serverLogger)
 app.use(transactionIdMiddleware)
 app.use(compression())
@@ -30,12 +35,12 @@ app.use(compression())
 logger.info('Mounting API endpoints to Express')
 const baseEndpoint = config.api.prefix + config.api.version
 app.use(baseEndpoint, routes)
-app.get(baseEndpoint + 'error', (req, res, next) => {
+app.get(baseEndpoint + '/error', (req, res, next) => {
   Promise.resolve().then(function () {
     throw createHttpError.InternalServerError("That's not supposed to happen!")
   }).catch(next)
 })
-app.get(baseEndpoint + 'goodbye', (req, res, next) => {
+app.get(baseEndpoint + '/goodbye', (req, res, next) => {
   throw Error('Goodbye World!')
 })
 
