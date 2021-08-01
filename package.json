@@ -1,6 +1,6 @@
 {
   "name": "cardona-node",
-  "version": "v0.3-alpha",
+  "version": "0.3.0",
   "description": "Cardona server-side application for the MEVN stack",
   "main": "app.js",
   "scripts": {
