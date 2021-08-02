@@ -2,6 +2,7 @@
 import http from 'http'
 import https from 'https'
 import fs from 'fs'
+import ocsp from 'ocsp'
 
 // App Dependency
 import app from '../app.js'
@@ -24,7 +25,7 @@ if (config.https) {
     // In production, we have to set a dummy HTTP server to redirect to HTTPS
     logger.info('Creating dummy HTTP server to redirect to HTTPS')
     http.createServer((req, res) => {
-      res.writeHead(307, {
+      res.writeHead(301, {
         Location: 'https://' + req.headers.host + req.url
       })
       res.end()
@@ -41,6 +42,29 @@ if (config.https) {
   // Create HTTPS Server
   logger.info('Starting HTTPS server on ' + port)
   server = https.createServer(tls, app)
+
+  // Initiate OCSP stapling
+  logger.info('Initializing OCSP stapling')
+  const cache = new ocsp.Cache()
+  server.on('OCSPRequest', function (cert, issuer, cb) {
+    ocsp.getOCSPURI(cert, function (err, uri) {
+      if (err) return cb(err)
+      if (uri === null) return cb()
+
+      const req = ocsp.request.generate(cert, issuer)
+      cache.probe(req.id, function (err, cached) {
+        if (err) return cb(err)
+        if (cached !== false) return cb(null, cached.response)
+
+        const options = {
+          url: uri,
+          ocsp: req.data
+        }
+
+        cache.request(req.id, options, cb)
+      })
+    })
+  })
 } else {
   // Create HTTP Server
   logger.info('Starting HTTP server on ' + port)
