@@ -31,7 +31,7 @@ app.use(helmet({
     useDefaults: false,
     directives: {
       'default-src': ["'none'"],
-      'frame-ancestors': ["'self"],
+      'frame-ancestors': ["'self'"],
       'script-src': ["'self'"],
       'style-src': ["'self'"],
       'img-src': ["'self'"],
