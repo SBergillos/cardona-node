@@ -19,7 +19,16 @@ export default {
   // Application
   app: {
     name: 'cardona-node',
-    version: 'v0.2-alpha'
+    version: 'v0.3-alpha'
+  },
+
+  // Protocol
+  https: process.env.HTTPS || false,
+
+  // TLS Certificate
+  cert: {
+    file: process.env.SSL_CERT_FILE,
+    key: process.env.SSL_CERT_KEY
   },
 
   // Port
