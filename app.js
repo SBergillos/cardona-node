@@ -32,7 +32,7 @@ app.use(helmet({
     directives: {
       'default-src': ["'none'"],
       'frame-ancestors': ["'self"],
-      'script-src': ["'self'"]
+      'script-src': ["'self'"],
       'style-src': ["'self'"],
       'img-src': ["'self'"],
       'connect-src': ["'self'"],
