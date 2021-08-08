@@ -2,6 +2,9 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible'
 import createHttpError from 'http-errors'
 
+// Loader dependencies
+import { logger } from './logger.js'
+
 // Rate limiter options
 // Points: number of HTTP requests
 // Duration: size of the fixed window in seconds
@@ -24,6 +27,10 @@ const rateLimiterMiddleware = (req, res, next) => {
     })
     .catch((rateLimiterRes) => {
       res.set('Retry-After', rateLimiterRes.msBeforeNext / 1000)
+      logger.warn({
+        ip: req.ip, 
+        msg: 'Has exceded the number of requests allowed'
+      })
       next(createHttpError.TooManyRequests('Too many requests!'))
     })
 }
