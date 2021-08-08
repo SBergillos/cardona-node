@@ -3,7 +3,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible'
 import createHttpError from 'http-errors'
 
 // Loader dependencies
-import { logger } from './loaders/logger.js'
+import { logger } from './logger.js'
 
 // Rate limiter options
 // Points: number of HTTP requests
