@@ -23,7 +23,7 @@ export default {
   },
 
   // Protocol
-  https: process.env.HTTPS || false,
+  https: (process.env.HTTPS === 'true') || false,
 
   // TLS Certificate
   cert: {
