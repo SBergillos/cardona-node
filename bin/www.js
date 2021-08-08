@@ -21,17 +21,6 @@ app.set('port', port)
 let server
 
 if (config.https) {
-  if (config.env === 'production') {
-    // In production, we have to set a dummy HTTP server to redirect to HTTPS
-    logger.info('Creating dummy HTTP server to redirect to HTTPS')
-    http.createServer((req, res) => {
-      res.writeHead(301, {
-        Location: 'https://' + req.headers.host + req.url
-      })
-      res.end()
-    }).listen(80)
-  }
-
   // Get TLS data: certificate and key.
   logger.info('Reading TLS Certificate')
   const tls = {
@@ -43,28 +32,39 @@ if (config.https) {
   logger.info('Starting HTTPS server on ' + port)
   server = https.createServer(tls, app)
 
-  // Initiate OCSP stapling
-  logger.info('Initializing OCSP stapling')
-  const cache = new ocsp.Cache()
-  server.on('OCSPRequest', function (cert, issuer, cb) {
-    ocsp.getOCSPURI(cert, function (err, uri) {
-      if (err) return cb(err)
-      if (uri === null) return cb()
+  // In production, we have to set a dummy HTTP server to redirect to HTTPS
+  // and allow OCSP stapling
+  if (config.env === 'production') {
+    logger.info('Creating dummy HTTP server to redirect to HTTPS')
+    http.createServer((req, res) => {
+      res.writeHead(301, {
+        Location: 'https://' + req.headers.host + req.url
+      })
+      res.end()
+    }).listen(80)
 
-      const req = ocsp.request.generate(cert, issuer)
-      cache.probe(req.id, function (err, cached) {
+    logger.info('Initializing OCSP stapling')
+    const cache = new ocsp.Cache()
+    server.on('OCSPRequest', function (cert, issuer, cb) {
+      ocsp.getOCSPURI(cert, function (err, uri) {
         if (err) return cb(err)
-        if (cached !== false) return cb(null, cached.response)
+        if (uri === null) return cb()
 
-        const options = {
-          url: uri,
-          ocsp: req.data
-        }
+        const req = ocsp.request.generate(cert, issuer)
+        cache.probe(req.id, function (err, cached) {
+          if (err) return cb(err)
+          if (cached !== false) return cb(null, cached.response)
 
-        cache.request(req.id, options, cb)
+          const options = {
+            url: uri,
+            ocsp: req.data
+          }
+
+          cache.request(req.id, options, cb)
+        })
       })
     })
-  })
+  }
 } else {
   // Create HTTP Server
   logger.info('Starting HTTP server on ' + port)
