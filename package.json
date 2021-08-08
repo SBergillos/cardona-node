@@ -1,6 +1,6 @@
 {
   "name": "cardona-node",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Cardona server-side application for the MEVN stack",
   "main": "app.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "ocsp": "1.2.0",
     "pino": "7.0.0-rc.2",
     "pino-http": "5.6.0",
+    "rate-limiter-flexible": "2.2.4",
     "uuid": "8.3.2"
   },
   "type": "module"

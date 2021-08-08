@@ -8,6 +8,7 @@ import helmet from 'helmet'
 import { logger, serverLogger } from './loaders/logger.js'
 import { transactionIdMiddleware } from './loaders/transaction_id_middleware.js'
 import errorHandler from './loaders/error.js'
+import rateLimiterMiddleware from './loaders/rate_limiter.js'
 
 // Configuration Dependencies
 import config from './config/index.js'
@@ -15,7 +16,11 @@ import config from './config/index.js'
 // Routes Dependencies
 import routes from './api/index.js'
 
-logger.info('Starting Cardona')
+// API base endpoint
+const baseEndpoint = config.api.prefix + config.api.version
+
+// Start APP
+logger.info("Starting 'cardona-node'")
 
 // Create Express APP
 logger.info('Starting Express app')
@@ -43,13 +48,13 @@ app.use(helmet({
     }
   }
 }))
-app.use(serverLogger)
 app.use(transactionIdMiddleware)
+app.use(baseEndpoint, rateLimiterMiddleware)
 app.use(compression())
+app.use(serverLogger)
 
 // Mount API endpoints
 logger.info('Mounting API endpoints to Express')
-const baseEndpoint = config.api.prefix + config.api.version
 app.use(baseEndpoint, routes)
 app.get(baseEndpoint + '/error', (req, res, next) => {
   Promise.resolve().then(function () {

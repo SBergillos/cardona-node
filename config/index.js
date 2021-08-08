@@ -19,7 +19,7 @@ export default {
   // Application
   app: {
     name: 'cardona-node',
-    version: 'v0.3-alpha'
+    version: 'v0.4-alpha'
   },
 
   // Protocol
