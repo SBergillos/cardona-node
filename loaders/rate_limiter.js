@@ -28,7 +28,7 @@ const rateLimiterMiddleware = (req, res, next) => {
     .catch((rateLimiterRes) => {
       res.set('Retry-After', rateLimiterRes.msBeforeNext / 1000)
       logger.warn({
-        ip: req.ip, 
+        ip: req.ip,
         msg: 'Has exceded the number of requests allowed'
       })
       next(createHttpError.TooManyRequests('Too many requests!'))

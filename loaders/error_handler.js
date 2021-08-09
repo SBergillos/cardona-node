@@ -13,7 +13,9 @@ const errorHandler = (err, res) => {
     process.exit(1)
   }
 
-  // It's not necessary to log here because the pino-http logger will do it
+  // Log the api error as a warning
+  logger.warn(err)
+
   // Return the error response to the client.
   return res.status(err.statusCode).send({
     name: err.name,
